@@ -71,6 +71,7 @@ const DonationRow = ({ donation, users }) => {
       </td>
       <td>{user.firstName}</td>
       <td>{user.lastName}</td>
+      <td>{user.email}</td>
       <td>{user.id}</td>
       <td>{donation.amount}</td>
       <td>{donation.tip}</td>      
@@ -166,6 +167,7 @@ const Index = (props) => (
           <th>ID</th>
           <th>First name</th>
           <th>Last name</th>
+          <th>Email</th>
           <th>User Id</th>
           <th>Amount</th>
           <th>Tip</th>

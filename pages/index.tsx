@@ -81,7 +81,7 @@ const handleDelete = () => {
   const id: number = parseFloat((document.getElementById("del_id") as HTMLInputElement).value)
 
   const response = postObj("/del_donation", { id } );
-  //console.log(response);
+  console.log(response);
 
   window.location.reload(true)
 }
@@ -126,7 +126,7 @@ const handleUpdateUser = () => {
   
   
   const response = postObj("/update_user", userInfo );
-  //console.log(response);
+  console.log(response);
 
   window.location.reload(true)
   
@@ -257,10 +257,10 @@ const Index = (props) => (
                
 </div>
     
-    
   </Layout>
 )
 
+// fetch donations as props
 Index.getInitialProps = async function() {
   
   const res = await fetch(server+'/donations')

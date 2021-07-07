@@ -133,7 +133,7 @@ app.prepare()
     res.end(JSON.stringify(response));
   });
 
-  // This responds a DELETE request for the /del_user page.
+  // Update user info
   server.post('/update_user', (req: Request, res: Response) => {
 
     const userInfo = {

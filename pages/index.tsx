@@ -48,11 +48,11 @@ async function postObj (api_url, obj) {
         //console.log(response);
         if (response !== undefined && response.statusText === "OK") {
             // successful Post to api_url
-              return "success";
+              console.log("success");
         
         } else {
             // error Posting to api_url
-            return "error";
+              console.log("error");
             
         }
     })
@@ -65,7 +65,7 @@ const DonationRow = ({ donation, users }) => {
   return (    
     <tr key={donation.id}>
       <td>
-      <Link as={`/p/${donation.id}`} href={`/post?id=${donation.id}`}>
+      <Link href={`/p/${donation.id}`} >
         <a>{donation.id}</a>
       </Link>
       </td>
@@ -265,10 +265,6 @@ Index.getInitialProps = async function() {
   
   const res = await fetch(server+'/donations')
   const data = await res.json()
-  
-  //console.log(data)
-  //console.log(`Donation data fetched. Count: ${data.donations.length}`)
-  //console.log(`Donation Id: ${data.donations[0].id}`)
 
   return {
     donationData: data

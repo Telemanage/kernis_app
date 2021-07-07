@@ -41,10 +41,25 @@ app.prepare()
 
 
   // 'fetch' donations
-  server.get('/donations', function(req: Request, res: Response){
+  server.get('/donations', (req: Request, res: Response) => {
     const response = {donations, users};
     res.end(JSON.stringify(response));
   });
+
+  // get donation
+  server.get('/p/:id', (req: Request, res: Response) => {
+
+    // find donation
+    const findDonation = donations.find((donation) => parseFloat(req.params.id) == donation.id)
+
+    // prepare response
+    const response = {donation: findDonation};
+
+    // return JSON string response
+    res.end(JSON.stringify(response));
+  })
+
+  
 
 
   // create donation 

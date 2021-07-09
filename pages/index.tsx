@@ -1,63 +1,14 @@
+import React from 'react';
 import Layout from '../components/MyLayout'
 import Link from 'next/link'
 import fetch from 'isomorphic-unfetch'
-import Axios from 'axios'
-import qs from 'qs'
+//import 'isomorphic-fetch'
+import { Component } from 'react'
 
-const PostAsyncHelper = async (url, object, onDownloadProgressConfig, ) => {
-
-  try {
-      const options = {
-          arrayFormat: 'indices',
-          format: 'RFC3986',
-          charset: 'utf-8',
-          // encode: false,
-          // strictNullHandling: true,
-          // allowDots: true,
-          // addQueryPrefix: true
-      }
-      const response = await Axios({
-          method: 'post',
-          url: url,
-          headers: {
-              'content-type': 'application/x-www-form-urlencoded'
-          },
-          data: qs.stringify(object, options),
-          onDownloadProgress: onDownloadProgressConfig,
-      }, )
-      if (response.statusText !== "OK") {
-          console.log ("PostAsyncHelper errors status not OK: ")
-          console.log (response.statusText)  
-          throw Error(response.statusText)
-      }
-      return response
-  } catch (error) {
-      console.log ("PostAsyncHelper error handler")  
-      console.log (error)
-      console.error(error.message)
-  }
-}
+import {DonationData, IFormProps, IndexState} from "models/donation.interface"
 
 const dev = process.env.NODE_ENV !== 'production';
 const server = dev ? 'http://localhost:3000' : 'https://your_deployment.server.com';
-
-
-async function postObj (api_url, obj) {
-  PostAsyncHelper(api_url, obj, null)
-    .then(response => {
-        //console.log(response);
-        if (response !== undefined && response.statusText === "OK") {
-            // successful Post to api_url
-              console.log("success");
-        
-        } else {
-            // error Posting to api_url
-              console.log("error");
-            
-        }
-    })
- 
-}
 
 const DonationRow = ({ donation, users }) => {
   
@@ -78,199 +29,264 @@ const DonationRow = ({ donation, users }) => {
     </tr>)
 }
 
-const handleDelete = () => {
-  const id: number = parseFloat((document.getElementById("del_id") as HTMLInputElement).value)
+export default class Index extends Component<IFormProps, IndexState> {
 
-  const response = postObj("/del_donation", { id } );
-  console.log(response);
-
-  window.location.reload(true)
-}
-
-const handleAddDonation = () => {
-  const first_name: string = (document.getElementById("first_name") as HTMLInputElement).value
-  const last_name: string = (document.getElementById("last_name") as HTMLInputElement).value
-  const email: string = (document.getElementById("email") as HTMLInputElement).value
-  const amount: number = parseFloat((document.getElementById("amount") as HTMLInputElement).value)
-  const tip: number = parseFloat((document.getElementById("tip") as HTMLInputElement).value)
-
-  const donationInfo = {
-    first_name,
-    last_name,
-    email,
-    amount,
-    tip
-  };
-  
-  const response = postObj("/new_donation", donationInfo );
-  console.log(response);
-
-  window.location.reload(true)
-  
-  
-}
-
-const handleUpdateUser = () => {
-  const id: number = parseFloat((document.getElementById("upd_id") as HTMLInputElement).value)
-  const first_name: string = (document.getElementById("upd_first_name") as HTMLInputElement).value
-  const last_name: string = (document.getElementById("upd_last_name") as HTMLInputElement).value
-  const email: string = (document.getElementById("upd_email") as HTMLInputElement).value
-
-  const userInfo = {
-    id,
-    first_name,
-    last_name,
-    email,
-  };
-
-  console.log(userInfo);
-  
-  
-  const response = postObj("/update_user", userInfo );
-  console.log(response);
-
-  window.location.reload(true)
-  
-  
-}
-
-const Index = (props) => (
-  <Layout>
-    <style jsx>{`
-      h1, a {
-        font-family: "Arial";
-      }
-
-      ul {
-        padding: 0;
-      }
-
-      li {
-        list-style: none;
-        margin: 5px 0;
-      }
-
-      a {
-        text-decoration: none;
-        color: blue;
-      }
-
-      a:hover {
-        opacity: 0.6;
-      }
-    `}</style>
-    
-    <h1>{props.donationData.donations.length} Donations</h1>
-    <table>
-      <tbody>
-        <tr>
-          <th>ID</th>
-          <th>First name</th>
-          <th>Last name</th>
-          <th>Email</th>
-          <th>User Id</th>
-          <th>Amount</th>
-          <th>Tip</th>
-        </tr>
-        {props.donationData.donations.map((donation) => (
-          <DonationRow key={donation.id} donation={donation} users={props.donationData.users} />
-        ))}
-      </tbody>
-    </table>
-
-    <div>
-
-      <h3>Add a donation</h3>
-
-      <table style={{border: "solid 1px"}}>
-        <tbody>
-          <tr>
-            <td>First Name:</td>
-            <td><input type="text" id="first_name" name="first_name" /></td>
-          </tr>
-          <tr>
-            <td>Last Name:</td>
-            <td><input type="text" id="last_name" name="last_name" /></td>
-          </tr>
-          <tr>
-            <td>Email:</td>
-            <td><input type="text" id="email" name="email" /></td>
-          </tr>
-          <tr>
-            <td>Donation:</td>
-            <td><input type="text" id="amount" name="amount" /></td>
-          </tr>
-          <tr>
-            <td>Tip:</td>
-            <td><input type="text" id="tip" name="tip" /></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td><button onClick={(e) => handleAddDonation()} >Add donation</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-
-<div>    
-  <h3>Delete a donation</h3>
-  <table style={{border: "solid 1px"}}>
-    <tbody>
-      <tr>
-        <td>id:</td>
-        <td><input type="text" id="del_id" name="del_id" /></td>
-      </tr>
-      <tr>
-        <td></td>
-        <td><button onClick={(e) => handleDelete()} >Delete donation</button></td>
-      </tr>
-    </tbody>
-  </table>               
-</div>
-
-<div>      
-
-  <h3>Update user info</h3>
-  <table style={{border: "solid 1px"}}>
-    <tbody>
-      <tr>
-        <td>User id to update:</td>
-        <td><input type="text" id="upd_id" name="upd_id" /></td>
-      </tr>
-      <tr>
-        <td>First Name:</td>
-        <td><input type="text" id="upd_first_name" name="upd_first_name" /></td>
-      </tr>
-      <tr>
-        <td>Last Name:</td>
-        <td><input type="text" id="upd_last_name" name="upd_last_name" /></td>
-      </tr>
-      <tr>
-        <td>Email:</td>
-        <td><input type="text" id="upd_email" name="upd_email" /></td>
-      </tr>
-      <tr>
-        <td></td>
-        <td><button onClick={(e) => handleUpdateUser()} >Update user</button> </td>
-      </tr>
-    </tbody>
-  </table>
-               
-</div>
-    
-  </Layout>
-)
-
-// fetch donations as props
-Index.getInitialProps = async function() {
-  
-  const res = await fetch(server+'/donations')
-  const data = await res.json()
-
-  return {
-    donationData: data
+  constructor(props: IFormProps) {
+      super(props);
+      const donations:any = [];
+      const users:any = [];
+      this.state = {
+          donations,
+          users
+      };
   }
-}
 
-export default Index
+  fetchDonations = () => {
+    fetch(server+'/donations')
+        .then(response => {   
+          if (!response.ok) {      
+            throw new Error("HTTP error " + response.status); 
+          } 
+          return response.json();
+        })
+        .then((data: DonationData) => this.setState(data))
+        .catch(error => {                                        
+          // Handle/report error.
+          console.log(error)
+        })
+  }
+
+  componentWillMount() {
+    this.fetchDonations()
+  }
+
+  // Donation form
+  AddDonation = () => {
+  
+    const postDonation = async event => {
+      event.preventDefault()
+  
+      const donationInfo = {
+        first_name: event.target.first_name.value,
+        last_name:  event.target.last_name.value,
+        email:      event.target.email.value,
+        amount:     event.target.amount.value,
+        tip:        event.target.tip.value,
+      };
+  
+      const res = await fetch(server+'/new_donation',
+        {
+          body: JSON.stringify(donationInfo),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST'
+        }
+      )
+  
+      const result = await res.json()
+      this.setState({donations: result.donations})      
+    }
+  
+    return (
+      <div>
+        <h3>Add a donation</h3>
+        <form onSubmit={postDonation}>
+          <table style={{border: "solid 1px"}}>
+            <tbody>
+              <tr>
+                <td>First Name:</td>
+                <td><input type="text" name="first_name" /></td>
+              </tr>
+              <tr>
+                <td>Last Name:</td>
+                <td><input type="text" name="last_name" /></td>
+              </tr>
+              <tr>
+                <td>Email:</td>
+                <td><input type="text" name="email" /></td>
+              </tr>
+              <tr>
+                <td>Donation:</td>
+                <td><input type="text" name="amount" /></td>
+              </tr>
+              <tr>
+                <td>Tip:</td>
+                <td><input type="text" name="tip" /></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td><button type="submit">Add donation</button></td>
+              </tr>
+            </tbody>
+          </table>
+        
+      </form>
+      </div>
+    )
+  }
+  
+  // Update user info form
+  UpdateUser = () => {
+  
+    const updateUser = async event => {
+      event.preventDefault()
+  
+      const userInfo = {
+        id:         event.target.upd_id.value,
+        first_name: event.target.upd_first_name.value,
+        last_name:  event.target.upd_last_name.value,
+        email:      event.target.upd_email.value,
+      };
+  
+      const res = await fetch(server+'/update_user',
+        {
+          body: JSON.stringify(userInfo),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST'
+        }
+      )
+  
+      const result = await res.json()
+      this.setState({users: result.users})      
+    }
+  
+    return (
+      <div>
+        <h3>Update user info</h3>          
+        <form onSubmit={updateUser}>
+          <table style={{border: "solid 1px"}}>
+            <tbody>
+              <tr>
+                <td>User id to update:</td>
+                <td><input type="text" name="upd_id" /></td>
+              </tr>
+              <tr>
+                <td>First Name:</td>
+                <td><input type="text" name="upd_first_name" /></td>
+              </tr>
+              <tr>
+                <td>Last Name:</td>
+                <td><input type="text" name="upd_last_name" /></td>
+              </tr>
+              <tr>
+                <td>Email:</td>
+                <td><input type="text" name="upd_email" /></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td><button type="submit">Update user</button> </td>
+              </tr>
+            </tbody>
+          </table>        
+        </form>
+      </div>
+    )
+  }
+  
+  // Delete donation form
+  DeleteDonation = () => {
+  
+    const deleteDonation = async event => {
+      event.preventDefault()
+
+      const id: number = parseFloat(event.target.del_id.value)
+
+      const res = await fetch(server+'/del_donation',
+        {
+          body: JSON.stringify({id}),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST'
+        }
+      )
+    
+      const result = await res.json()    
+      this.setState({donations: result.donations})      
+    }
+  
+    return (
+      <div>    
+        <h3>Delete a donation</h3>  
+        <form onSubmit={deleteDonation}>
+          <table style={{border: "solid 1px"}}>
+          <tbody>
+            <tr>
+              <td>id:</td>
+              <td><input type="text" name="del_id" /></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td><button type="submit">Delete donation</button></td>
+            </tr>
+          </tbody>
+        </table> 
+        </form>
+      </div>
+    )
+  }
+  
+
+  render(){
+    const {donations=[], users=[]} = this.state
+
+    return(
+      <Layout>
+        <style jsx>{`
+          h1, a {
+            font-family: "Arial";
+          }
+
+          ul {
+            padding: 0;
+          }
+
+          li {
+            list-style: none;
+            margin: 5px 0;
+          }
+
+          a {
+            text-decoration: none;
+            color: blue;
+          }
+
+          a:hover {
+            opacity: 0.6;
+          }
+        `}</style>
+        
+        {donations && <div>
+          <h1>{donations.length} Donations</h1>
+          <table>
+            <tbody>
+              <tr>
+                <th>ID</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Email</th>
+                <th>User Id</th>
+                <th>Amount</th>
+                <th>Tip</th>
+              </tr>
+              {donations.map((donation) => (
+                <DonationRow key={donation.id} donation={donation} users={users} />
+              ))}
+            </tbody>
+          </table>
+        </div>}
+
+        {this.AddDonation()}
+        
+        {this.DeleteDonation()}
+
+        {this.UpdateUser()}          
+        
+      </Layout>
+    );
+  }
+
+}
